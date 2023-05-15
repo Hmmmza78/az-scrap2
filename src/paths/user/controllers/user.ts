@@ -4,7 +4,7 @@ export { }
 
 import User, { userDocument } from '../../../models/user'
 import { UserService } from '../../../services/'
-import {  NotFoundError,  BadRequestError,} from '../../../helpers/apiError'
+import { NotFoundError, BadRequestError, ValidationError } from '../../../helpers/apiError'
 // import { createToken, verifyJWT, requireAdminandVerifyJWT } from './auth'
 
 // GET /users
@@ -95,5 +95,35 @@ export const findByQuery = async (req: Request, res: Response, next: NextFunctio
     return res.json({ status: "success", data: user })
   } catch (err) {
     next(new NotFoundError('Record not found', err))
+  }
+}
+
+
+export const create = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { phone } = req.body as userDocument;
+    const old = await UserService.findOne({ phone });
+    if (old != null) {
+      return next(new BadRequestError("This phone already exists"));
+    }
+    const data = await UserService.create(req["validData"]);
+    return res.json({ status: "success", data });
+  } catch (error) {
+    console.log(error.message);
+
+    return next(new ValidationError("Invalid fields: " + JSON.stringify(error)));
+  }
+}
+
+export const login = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { phone } = req.body;
+    const data = await UserService.findOne({ phone });
+    if (data == null) {
+      return next(new NotFoundError("No records found"));
+    }
+    return res.json({ status: "success", data })
+  } catch (error) {
+    return next(new ValidationError("Invalid phone number or password", error));
   }
 }

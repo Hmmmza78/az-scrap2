@@ -53,22 +53,22 @@ export const findById = async (
 }
 
 //POST /products
-export const createRecord = async (
+export const create = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { title, description, weight, price, phone, photos, address, category } = req.body as scrapDocument
+    // const { title, description, weight, price, phone, photos, address, category } = req.body as scrapDocument
 
 
-    const record = new Scrap({
-      title, description, weight, price, phone, photos, address, category
-    });
-    await ScrapService.create(record)
-    return res.json({ data: record })
+    // const record = new Scrap({
+    //   title, description, weight, price, phone, photos, address, category
+    // });
+    const data = await ScrapService.create(req["validData"])
+    return res.json({ data })
   } catch (error) {
-      next(new BadRequestError('Invalid Request', error))
+    next(new BadRequestError('Invalid Request', error))
   }
 }
 

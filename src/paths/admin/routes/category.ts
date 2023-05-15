@@ -5,7 +5,7 @@ import { validateInputs } from "../../../middlewares/validate";
 const router = express.Router();
 
 
-router.post("/create", validateInputs([]), create)
+router.post("/create", validateInputs(["name", "image", "parent"]), create)
 router.get("/getAll", findAll);
 router.get("/getByQuery", findByQuery);
 router.get("/getById/:id", findById);
